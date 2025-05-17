@@ -20,7 +20,7 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'goal_manager: controller.goal_manager:main',
+            'goal_manager = controller.goal_manager:main',
         ],
     },
 )
