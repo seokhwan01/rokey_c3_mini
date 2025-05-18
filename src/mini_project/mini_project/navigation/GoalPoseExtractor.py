@@ -71,9 +71,6 @@ class GoalPoseExtractor(Node):
         self.get_logger().info("✅ Successed to convert capture image")
 
     def depth_callback(self, msg):
-        if self.rgb_image is None:
-            self.get_logger().warn("Waiting for RGB image...")
-            return
         if self.K is None:
             self.get_logger().warn("Camera intrinsics not received yet...")
             return
