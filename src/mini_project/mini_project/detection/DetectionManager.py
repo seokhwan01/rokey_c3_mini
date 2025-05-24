@@ -13,12 +13,16 @@ import cv2
 from vision_msgs.msg import Detection2DArray, Detection2D, ObjectHypothesisWithPose
 from std_msgs.msg import Header
 
-current_dir = '/home/rokey/rokey_c3_mini/src/mini_project/model'
+current_dir = '/home/choi/rokey_c3_mini/src/mini_project/model'
 model_path = os.path.join(current_dir, 'real_final_best.pt')
 
 class DetectionManager(Node):
     def __init__(self, model):
         super().__init__('detection_manager')
+
+        # self.declare_parameter('model_path', '')
+        # model_path = self.get_parameter('model_path').get_parameter_value().string_value
+        # self.get_logger().info(f'Model path received: {model_path}')
 
         self.model = model
         self.bridge = CvBridge()

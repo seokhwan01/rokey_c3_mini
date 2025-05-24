@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>택배 로그 기록</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f3f4f6;
+            padding: 40px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        table {
+            margin: 0 auto;
+            width: 90%;
+            border-collapse: collapse;
+            background-color: white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        th, td {
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 30px;
+            text-decoration: none;
+            color: #4CAF50;
+            font-weight: bold;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <h1>택배 수령 및 배송 로그</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>로봇 이름</th>
+                <th>택배 ID</th>
+                <th>호실</th>
+                <th>수령 시간</th>
+                <th>배송 완료 시간</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for log in logs %}
+            <tr>
+                <td>{{ log.robot_name }}</td>
+                <td>{{ log.parcel_id }}</td> 
+                <td>{{ log.room_number }}</td>
+                <td>{{ log.received_time }}</td>
+                <td>{{ log.delivered_time }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ url_for('dashboard') }}" class="back-link">← 대시보드로 돌아가기</a>
+</body>
+</html>

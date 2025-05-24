@@ -1,0 +1,5 @@
+string qr_id
+string target_room
+---
+bool success
+string message

@@ -35,10 +35,13 @@ setup(
             'display_manager = mini_project.detection.DisplayManager:main',
             'qr_detection = mini_project.detection.QRDetection:main',
 
-            'following_car = mini_project.navigation.FollowingCar:main',
+            #'following_car = mini_project.navigation.FollowingCar:main',
             'goal_pose_extractor = mini_project.navigation.GoalPoseExtractor:main',
             'nav_to_pose = mini_project.navigation.NavToPose:main',
             'goal_manager = mini_project.navigation.GoalManager:main',
+            'task_manager = mini_project.navigation.TaskManager:main',
+            'action_manager = mini_project.navigation.RobotNavigator:main',
+            'FollowingCar_croppedDepth = mini_project.navigation.FollowingCar_croppedDepth:main',
         ],
     },
 )

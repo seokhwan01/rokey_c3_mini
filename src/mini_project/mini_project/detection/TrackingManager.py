@@ -13,8 +13,12 @@ import cv2
 from vision_msgs.msg import Detection2DArray, Detection2D, ObjectHypothesisWithPose
 from std_msgs.msg import Header
 
-current_dir = '/home/rokey/rokey3_C1_ws/src/detection/detection'
-model_path = os.path.join(current_dir, 'model/real_final_best.pt')
+#받는거 capture_image
+#발행 tracking_result 메시지 형태는 sudo apt install ros-humble-vision-msgs다운
+#객체의 감지 정보(박스, 클래스, ID 등)를 구조화된 메시지로 퍼블리시
+
+current_dir = '/home/choi/rokey_c3_mini/src/mini_project/model'
+model_path = os.path.join(current_dir, 'real_final_best.pt')
 
 class TrackingManager(Node):
     def __init__(self, model):

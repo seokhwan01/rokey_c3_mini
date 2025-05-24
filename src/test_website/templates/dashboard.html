@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f3f4f6;
+        }
+
+        .welcome-container {
+            width: 100%;
+            max-width: 1200px;
+            padding: 20px;
+            border-radius: 8px;
+            background-color: white;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            text-align: center;
+        }
+
+        .welcome-container h1 {
+            font-size: 28px;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .video-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            padding: 20px;
+            flex-wrap: nowrap; /* ✅ 이게 핵심! */
+        }
+
+        .video-feed img {
+            width: 480px;
+            height: auto;
+            border: 2px solid #ccc;
+            border-radius: 8px;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .data-table th, .data-table td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+
+        .data-table th {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .data-table tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        .logout-link, .logs-link {
+            display: inline-block;
+            padding: 10px 20px;
+            color: white;
+            background-color: #4CAF50;
+            text-decoration: none;
+            border-radius: 4px;
+            font-size: 16px;
+            margin-top: 20px;
+            margin-right: 10px;
+        }
+
+        .logout-link:hover, .logs-link:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <div class="welcome-container">
+        <h1>Last Mile!</h1>
+
+        <!-- 카메라 영상 표시 영역 -->
+        <div class="video-container">
+            <div class="video-feed">
+                <img id="cam1" src="" alt="Camera 1">
+            </div>
+            <div class="video-feed">
+                <img id="cam2" src="" alt="Camera 2">
+            </div>
+        </div>
+
+        <!-- 배송 기록 로그 테이블 -->
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>로봇 이름</th>
+                    <th>택배 ID</th>
+                    <th>호실</th>
+                    <th>수령 시간</th>
+                    <th>배송 완료 시간</th>
+                </tr>
+            </thead>
+            <tbody id="delivery-log-body">
+                <!-- JS에서 실시간으로 행이 추가됨 -->
+            </tbody>
+        </table>
+
+        <!-- 로그 페이지 및 로그아웃 버튼 -->
+        <a href="{{ url_for('logs') }}" class="logs-link">📄 전체 로그 보기</a>
+        <a href="{{ url_for('logout') }}" class="logout-link">Logout</a>
+    </div>
+
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+    <script>
+        const socket = io();
+
+        // 카메라 1 영상 수신
+        socket.on('image_broadcast_cam1', function(data) {
+            document.getElementById('cam1').src = 'data:image/jpeg;base64,' + data;
+        });
+
+        // 카메라 2 영상 수신
+        socket.on('image_broadcast_cam2', function(data) {
+            document.getElementById('cam2').src = 'data:image/jpeg;base64,' + data;
+        });
+
+        // 배송 로그 수신 및 테이블에 추가
+        socket.on('delivery_log_update', function(log) {
+            const table = document.getElementById('delivery-log-body');
+
+            // 로그 수가 5개 이상이면 가장 오래된 행 삭제
+            if (table.rows.length >= 5) {
+                table.deleteRow(0);
+            }
+
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${log.robot_name}</td>
+                <td>${log.parcel_id}</td>
+                <td>${log.room_number}</td>
+                <td>${log.received_time}</td>
+                <td>${log.delivered_time}</td>
+            `;
+            table.appendChild(row);
+        });
+    </script>
+</body>
+</html>

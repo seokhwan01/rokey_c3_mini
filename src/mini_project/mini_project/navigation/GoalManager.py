@@ -35,7 +35,6 @@ class GoalManager(Node):
         self.get_logger().info('언도킹 중...')
         self.navigator.undock()
 
-
         # GR 인식
         # === 서비스 클라이언트 생성 ===
         self.qr_service_client = self.create_client(Trigger, 'target_room')
@@ -74,6 +73,7 @@ class GoalManager(Node):
             self.get_logger().warn('follow 서비스 대기 중...')
 
         request = SetBool.Request()
+        # request = True ## Setbool는 trigger와 달리 data 있음
         request.data=True
 
         # future = self.qr_service_client.call_async(request)#### 여가서 에러 발생 가능성 있음
@@ -106,6 +106,11 @@ class GoalManager(Node):
         
     def handle_goal_from_json(self, goal_pose_dict):
         goal_pose = self.navigator.getPoseStamped([goal_pose_dict['x'], goal_pose_dict['y']], 0)
+        # goal_pose = self.navigator.getPoseStamped([goal_pose_dict['x'], goal_pose_dict['y']], -2.6)
+        #아니구나 일부로 회전시킨건데
+        #-2.6이 들어간 이유
+        # def getPoseStamped(self, position, rotation):
+        #계속 회전되던게 이것때문인거 같은데
         self.get_logger().info('JSON에서 pose를 불러옴. 자율주행 시작.')
         self.navigator.startToPose(goal_pose)
 

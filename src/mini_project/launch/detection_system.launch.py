@@ -19,7 +19,7 @@ def generate_launch_description():
 
     ros_namespace = LaunchConfiguration(
         'ros_namespace',
-        default='/robot8'
+        default='/robot9'
         # default=os.getenv("ROS_NAMESPACE", "default_ns")
     )
 
@@ -28,7 +28,7 @@ def generate_launch_description():
         default=os.path.join(
             get_package_share_directory('mini_project'),
             'model',
-            'best.pt'))
+            'real_final_best.pt'))
     
     launch_description = LaunchDescription()
 
@@ -60,21 +60,21 @@ def generate_launch_description():
         parameters=[param_dir],
         output='screen')
         
-    tracking_manager_node = Node(
-        package='mini_project',
-        executable='tracking_manager',
-        name='tracking_manager',
-        namespace=ros_namespace,
-        parameters=[param_dir],
-        output='screen')
+    # tracking_manager_node = Node(
+    #     package='mini_project',
+    #     executable='tracking_manager',
+    #     name='tracking_manager',
+    #     namespace=ros_namespace,
+    #     parameters=[param_dir],
+    #     output='screen')
 
-    display_manager_node = Node(
-        package='mini_project',
-        executable='display_manager',
-        name='display_manager',
-        namespace=ros_namespace,
-        parameters=[param_dir],
-        output='screen')
+    # display_manager_node = Node(
+    #     package='mini_project',
+    #     executable='display_manager',
+    #     name='display_manager',
+    #     namespace=ros_namespace,
+    #     parameters=[param_dir],
+    #     output='screen')
 
     qr_detection = Node(
         package='mini_project',
@@ -89,8 +89,8 @@ def generate_launch_description():
     launch_description.add_action(namespace)
     launch_description.add_action(image_publisher_node)
     launch_description.add_action(detection_manager_node)
-    launch_description.add_action(tracking_manager_node)
-    launch_description.add_action(display_manager_node)
+    # launch_description.add_action(tracking_manager_node)
+    # launch_description.add_action(display_manager_node)
     launch_description.add_action(qr_detection)
     
     return launch_description

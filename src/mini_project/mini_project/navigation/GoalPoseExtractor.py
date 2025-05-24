@@ -17,7 +17,7 @@ class GoalPoseExtractor(Node):
 
         self.bridge = CvBridge()
         self.K = None
-        self.rgb_topic = 'capture_image'
+        self.rgb_topic = 'capture_image' #
         self.depth_topic = 'oakd/stereo/image_raw/compressedDepth'
         self.info_topic = 'oakd/rgb/preview/camera_info'
         
@@ -70,9 +70,6 @@ class GoalPoseExtractor(Node):
         except Exception as e:
             self.get_logger().error(f"Failed to convert capture image: {e}")
         self.get_logger().info("✅ Successed to convert capture image")
-        
-    def detection_callback(self, msg: Detection2DArray):
-        self.detections = msg.detections
 
     def depth_callback(self, msg):
         if self.K is None:
@@ -121,6 +118,10 @@ class GoalPoseExtractor(Node):
 
                 z = float(self.depth_image[v, u]) / 1000
                 self.get_logger().info(f"Pixel ({u}, {v}), Depth: {z:.2f}m")
+  
+                if z == 0.0:
+                    self.get_logger().warn("Depth value is 0 at detected number's center.")
+                    continue
 
                 if z < 0.2 or z > 3.0:
                     self.get_logger().warn(f"Filtered out: depth z out of range (z={z:.2f})")
@@ -163,6 +164,9 @@ class GoalPoseExtractor(Node):
 
                 except Exception as e:
                     self.get_logger().warn(f"TF to map failed: {e}")
+        
+    def detection_callback(self, msg: Detection2DArray):
+        self.detections = msg.detections
 
     def handle_detection(self, label, current_confidence, pt_map):
             label = label.lower()

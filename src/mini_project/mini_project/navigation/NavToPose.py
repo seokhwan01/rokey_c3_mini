@@ -45,7 +45,7 @@ def main():
     navigator.info('Setting Goal pose')
     # goal_pose = navigator.getPoseStamped([-2.32, -0.067], TurtleBot4Directions.EAST) # car
     
-    goal_pose = navigator.getPoseStamped([-1.42, -0.595], TurtleBot4Directions.EAST) # "2"
+    goal_pose = navigator.getPoseStamped([-2.36, 1.94], TurtleBot4Directions.EAST) # "2"
 
     # goal_pose = navigator.getPoseStamped([-1.8, 0.008], -2.6)
 #   Position(-1.55069, 0.0668084, 0), Orientation(0, 0, -0.962154, 0.272507) = Angle: -2.5896

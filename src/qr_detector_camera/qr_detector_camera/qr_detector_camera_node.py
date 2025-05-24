@@ -4,13 +4,14 @@ import cv2
 from cv_bridge import CvBridge
 import time
 
+from qr_interfaces.msg import QRInfo
 from qr_interfaces.srv import GetTargetRoom
 
 
 class QRDetectorCameraNode(Node):
-    def __init__(self):
+    def __init__(self, ip_address):
         super().__init__('qr_detector_camera_node')
-
+        self.ip_address = ip_address
         self.detected_qr_ids = []
         self.detected_target_rooms = []
 
@@ -22,29 +23,27 @@ class QRDetectorCameraNode(Node):
         self.bridge = CvBridge()
         self.qr_detector = cv2.QRCodeDetector()
 
-        # /robot8/
-        self.cli = self.create_client(
+        self.srv = self.create_service(
             GetTargetRoom,
-            '/target_room'
+            '/robot8/target_room',
+            self.handle_qr_request
         )
 
-        while not self.cli.wait_for_service(timeout_sec=1.0):
-            self.get_logger().info(f'service not available')
-
         self.get_logger().info('✅ QR Detector + Camera 노드 시작됨.')
+        
         self.setup_camera() 
         #setup이랑 카메라 순서바꿔둠
         self.timer = self.create_timer(0.1, self.process_camera_frame)
 
 
     def setup_camera(self):
-        ip_address = input('IP address: ')
-        self.cap = cv2.VideoCapture(f'http://{ip_address}:8080/video')
+        # self.ip_address = input('IP address: ')
+        self.cap = cv2.VideoCapture(f'http://{self.ip_address}:8080/video')
 
         while not self.cap.isOpened():
             self.get_logger().warn('📷 카메라 연결 실패. 재시도 중...')
             time.sleep(1)
-            self.cap = cv2.VideoCapture(f'http://{ip_address}:8080/video')
+            self.cap = cv2.VideoCapture(f'http://{self.ip_address}:8080/video')
 
         self.get_logger().info('📷 카메라 연결 성공.')
 
@@ -64,6 +63,7 @@ class QRDetectorCameraNode(Node):
         ret, frame = self.cap.read()
         if not ret or frame is None:
             self.get_logger().warn('⚠️ 프레임 수신 실패')
+            self.setup_camera()
             return
 
         frame = cv2.resize(frame, (640, 480), interpolation=cv2.INTER_NEAREST)
@@ -110,37 +110,30 @@ class QRDetectorCameraNode(Node):
             self.get_logger().info(
                 f'✅ QR 감지 및 저장: qr_id={qr_id}, target_room={target_room} ({confidence})'
             )
-            self.handle_qr_request(qr_id, target_room)
         else:
             self.get_logger().info(f'🔁 중복 QR 무시됨: qr_id={qr_id}')
 
-    # def handle_qr_request(self, request, response):
-    #     qr_id_requested = request.qr_id
-    #     self.get_logger().info(f'📥 QR 요청 수신: {qr_id_requested}')
+    def handle_qr_request(self, request, response):
+        qr_id_requested = request.qr_id
+        self.get_logger().info(f'📥 QR 요청 수신: {qr_id_requested}')
 
-    #     if qr_id_requested in self.detected_qr_ids:
-    #         idx = self.detected_qr_ids.index(qr_id_requested)
-    #         response.success = True
-    #         response.target_room = self.detected_target_rooms[idx]
-    #         self.get_logger().info(f'📤 타겟룸 반환: {response.target_room}')
-    #     else:
-    #         response.success = False
-    #         response.target_room = ''
-    #         self.get_logger().warn('📤 요청한 QR ID를 찾을 수 없음')
+        if qr_id_requested in self.detected_qr_ids:
+            idx = self.detected_qr_ids.index(qr_id_requested)
+            response.success = True
+            response.target_room = self.detected_target_rooms[idx]
+            self.get_logger().info(f'📤 타겟룸 반환: {response.target_room}')
+        else:
+            response.success = False
+            response.target_room = ''
+            self.get_logger().warn('📤 요청한 QR ID를 찾을 수 없음')
 
-    #     return response
-
-    def handle_qr_request(self, qr_id, target_room):
-        request = GetTargetRoom.Request()
-        request.qr_id = qr_id
-        request.target_room = target_room
-        future = self.cli.call_async(request)
-        return future
+        return response
 
 
 def main(args=None):
     rclpy.init(args=args)
-    node = QRDetectorCameraNode()
+    ip_address=input("ip : ")
+    node = QRDetectorCameraNode(ip_address)
     try:
         rclpy.spin(node)
     except KeyboardInterrupt:
@@ -154,4 +147,3 @@ def main(args=None):
 
 if __name__ == '__main__':
     main()
-

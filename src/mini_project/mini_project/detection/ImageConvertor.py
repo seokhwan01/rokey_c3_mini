@@ -18,6 +18,13 @@ class ImageConvertor(Node):
             10)
         
         self.publisher_ = self.create_publisher(Image, 'capture_image', 10)
+        #imageConvertor node
+        #'/capture_image'로 수정 필요해 보임
+        # /붙으몉 절대 경로 안붙으면 상대경로
+        # 슬래쉬 안붙으면 <namespace>/capture_image로 나감, 네임스페이스 지정안하고 실행시켜서 
+        #상관은 없을 것 같지만 나중에 할때는 절대 경로 설정 필요해 보임
+        # '/capture_image' 면 네임스페이스 지정해도 토픽 이름 변화 X
+        # 로봇 두대로 할경우 '/robot8/image_capture' , '/robot7/image_capture'로 지정해줄 필요성 있음
 
         self.bridge = CvBridge()
 
